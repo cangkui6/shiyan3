@@ -3,11 +3,11 @@ server:
 
 eureka:
   instance:
-    hostname: register1  # Eureka 服务实例名
+    hostname: localhost  # 修改为localhost
   client:
-    register-with-eureka: true   # 允许向另一个 Eureka 注册
-    fetch-registry: true  # 允许从另一个 Eureka 拉取信息
+    register-with-eureka: false   # 改为false，不再向其他Eureka注册
+    fetch-registry: false  # 改为false，不再从其他Eureka拉取信息
     service-url:
-      defaultZone: http://localhost:8762/eureka/  # 互相注册
+      defaultZone: http://localhost:8761/eureka/  # 指向自身
   server:
     enable-self-preservation: false  # 关闭自我保护模式（用于测试）

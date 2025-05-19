@@ -4,25 +4,41 @@ server:
 spring:
   application:
     name: service-consumer
+  main:
+    allow-bean-definition-overriding: true  # 允许Bean定义覆盖，解决冲突问题
   cloud:
     loadbalancer:
       ribbon:
         enabled: false  # 禁用 Ribbon，Spring Cloud LoadBalancer 替代它
+      cache:
+        enabled: false  # 禁用负载均衡缓存，避免空指针问题
     feign:
+      circuitbreaker:
+        enabled: true   # 启用Feign的断路器支持
       client:
         config:
           default:
             loggerLevel: FULL  # 配置Feign日志，便于查看请求
+            # 添加错误解码器，避免空指针异常
+            errorDecoder: feign.codec.ErrorDecoder.Default
+            # 设置请求和响应的超时时间
+            connectTimeout: 5000
+            readTimeout: 5000
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/,http://localhost:8762/eureka/
+      defaultZone: http://localhost:8761/eureka/  # 只连接到8761的注册中心
     register-with-eureka: true
     fetch-registry: true
   instance:
     instance-id: consumer-8083
     prefer-ip-address: true
+
+# 服务提供者URL配置
+provider:
+  service:
+    url: http://localhost:8081  # 直接指定服务提供者的URL，避免通过服务发现
 
 resilience4j:
   circuitbreaker:
@@ -44,3 +60,24 @@ resilience4j:
         minimum-number-of-calls: 5         # 至少5个请求才开始计算
         wait-duration-in-open-state: 5s    # OPEN后等待5秒
         permitted-number-of-calls-in-half-open-state: 3 # HALF_OPEN时允许3个请求
+
+# Actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,circuitbreakers  # 暴露断路器状态端点
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true  # 启用断路器健康检查
+      
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full

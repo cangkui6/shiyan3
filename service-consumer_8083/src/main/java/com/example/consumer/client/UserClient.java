@@ -1,11 +1,18 @@
 package com.example.consumer.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Primary;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@FeignClient(name = "service-provider")  // 指定服务提供者
+@FeignClient(
+    name = "service-provider", 
+    contextId = "userClient", 
+    fallback = UserClientFallback.class,
+    url = "${provider.service.url:http://localhost:8081}"  // 提供默认URL，避免服务发现失败
+)
+@Primary
 public interface UserClient {
 
     @GetMapping("/users/{id}")
