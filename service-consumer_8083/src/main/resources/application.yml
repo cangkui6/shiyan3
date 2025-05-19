@@ -24,4 +24,23 @@ eureka:
     instance-id: consumer-8083
     prefer-ip-address: true
 
+resilience4j:
+  circuitbreaker:
+    instances:
+      circuitBreakerA:  # 已有的断路器A，不要动
+        failure-rate-threshold: 30
+        sliding-window-type: TIME_BASED
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
 
+      circuitBreakerB:  # 现在新增断路器B
+        failure-rate-threshold: 50       # 失败率超过50%熔断
+        slow-call-rate-threshold: 30      # 慢调用比例达到30%熔断
+        slow-call-duration-threshold: 2s  # 超过2秒的调用被认为是慢调用
+        sliding-window-type: TIME_BASED   # 时间窗口
+        sliding-window-size: 10           # 窗口长度10秒
+        minimum-number-of-calls: 5         # 至少5个请求才开始计算
+        wait-duration-in-open-state: 5s    # OPEN后等待5秒
+        permitted-number-of-calls-in-half-open-state: 3 # HALF_OPEN时允许3个请求
