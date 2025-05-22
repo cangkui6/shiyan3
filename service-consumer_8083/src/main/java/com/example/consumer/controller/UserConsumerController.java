@@ -18,11 +18,6 @@ public class UserConsumerController {
     @GetMapping("/{id}")
     @CircuitBreaker(name = "circuitBreakerB", fallbackMethod = "getUserFallback")
     public ResponseEntity<String> getUser(@PathVariable int id) {
-        try {
-            Thread.sleep(3000); // 添加3秒延迟
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         return ResponseEntity.ok(userClient.getUser(id));
     }
 

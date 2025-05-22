@@ -18,6 +18,11 @@ public class UserController {
     // 1. 获取用户信息
     @GetMapping("/{id}")
     public ResponseEntity<String> getUser(@PathVariable Integer id) {
+        try {
+            Thread.sleep(3000); // 添加3秒延迟
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         logger.info("收到获取用户请求，用户ID: {}", id);  // 日志记录
         if (userStore.containsKey(id)) {
             logger.info("用户存在，返回用户信息: {}", userStore.get(id));
