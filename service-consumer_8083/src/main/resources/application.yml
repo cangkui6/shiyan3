@@ -61,19 +61,32 @@ resilience4j:
         wait-duration-in-open-state: 5s    # OPEN后等待5秒
         permitted-number-of-calls-in-half-open-state: 3 # HALF_OPEN时允许3个请求
 
+# 限流器配置 - 独立配置部分
+resilience4j.ratelimiter:
+  instances:
+    rateLimit2023:  # 使用全新名称避免与其他组件冲突
+      limit-for-period: 5            # 每个周期内允许的最大请求数量为5
+      limit-refresh-period: 2s       # 刷新周期为2秒
+      timeout-duration: 500ms        # 等待获取权限的超时时间
+      allow-health-indicator-to-fail: true
+      register-health-indicator: true
+      event-consumer-buffer-size: 100
+
 # Actuator配置
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,circuitbreakers  # 暴露断路器状态端点
+        include: health,info,circuitbreakers,ratelimiters
   endpoint:
     health:
       show-details: always
   health:
     circuitbreakers:
       enabled: true  # 启用断路器健康检查
-      
+    ratelimiters:
+      enabled: true  # 启用限流器健康检查
+
 feign:
   client:
     config:
