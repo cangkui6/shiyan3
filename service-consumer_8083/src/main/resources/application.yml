@@ -81,3 +81,11 @@ feign:
         connectTimeout: 5000
         readTimeout: 5000
         loggerLevel: full
+
+# 隔离器配置
+bulkhead:
+  instances:
+    providerServiceBulkhead:  # Provider服务的隔离器
+      max-concurrent-calls: 10       # 允许并发执行的最大线程数为10
+      max-wait-duration: 20ms       # 线程最大等待时间为20毫秒
+      writable-stack-trace-enabled: true
